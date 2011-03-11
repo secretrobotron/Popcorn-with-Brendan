@@ -1,0 +1,184 @@
+{
+  "title":"",
+  "remote":"",
+  "data": [
+    {
+      "webglfx": {
+        "start":0.0,
+        "end":3,
+        "target":"videoPlane",
+        "effect":"zoomIn"
+      }
+    },
+    {
+      "webglfx": {
+        "start":0.2,
+        "end":121.5,
+        "target":"videoPlane",
+        "effect":"visible"
+      }
+    },
+    {
+      "webglfx": {
+        "start":4.0,
+        "end":6.0,
+        "target":"videoPlane",
+        "effect":"moveOver"
+      }
+    },
+    {
+      "webglfx": {
+        "start":5.4,
+        "end":8.5,
+        "target":"_new",
+        "effect":"flyUpText",
+        "text":"Full",
+        "offset":0.7
+      }
+    },
+    {
+      "webglfx": {
+        "start":5.8,
+        "end":8.9,
+        "target":"_new",
+        "effect":"flyUpText",
+        "text":"3D",
+        "offset":0.2,
+        "link":"http://en.wikipedia.org/wiki/Virtual_reality#Fiction"
+      }
+    },
+    {
+      "webglfx": {
+        "start":6.1,
+        "end":9.2,
+        "target":"_new",
+        "effect":"flyUpText",
+        "text":"Full",
+        "offset":-0.3
+      }
+    },
+    {
+      "webglfx": {
+        "start":6.4,
+        "end":9.5,
+        "target":"_new",
+        "effect":"flyUpText",
+        "text":"Sensory",
+        "offset":-0.8
+      }
+    },
+    { 
+      "webglfx": {
+        "start":25.0,
+        "end":65.0,
+        "target":"videoPlane",
+        "effect":"perspective"
+      }
+    },
+    { 
+      "webglfx": {
+        "start":8.0,
+        "end":42.0,
+        "target":"_new",
+        "effect":"imageWheel"
+      }
+    },
+    { 
+      "webglfx": {
+        "start":13.0,
+        "end":13.5,
+        "target":"_new",
+        "effect":"imageWheel",
+        "link":"http://youtu.be/Z7BuQFUhsRM",
+        "image":"images/cypher.jpg"
+      }
+    },
+    { 
+      "webglfx": {
+        "start":38.0,
+        "end":38.5,
+        "target":"_new",
+        "effect":"imageWheel",
+        "link":"http://www.google.com/sky/",
+        "image":"images/scotty.jpg"
+      }
+    },
+    { 
+      "webglfx": {
+        "start":29.0,
+        "end":29.5,
+        "target":"_new",
+        "effect":"imageWheel",
+        "link":"http://www.emotiv.com/",
+        "image":"images/morpheus.jpg"
+      }
+    },
+    {
+      "webglfx": {
+        "start":42.0,
+        "end":69.0,
+        "target":"_new",
+        "effect":"rumbleText",
+        "text":"BIG BROTHER",
+        "link":"http://en.wikipedia.org/wiki/Nineteen_Eighty-Four",
+        "offset":0.3
+      }
+    },
+    {
+      "webglfx": {
+        "start":42.0,
+        "end":69.0,
+        "target":"_new",
+        "effect":"rumbleText",
+        "text":"IS WATCHING",
+        "link":"http://en.wikipedia.org/wiki/Nineteen_Eighty-Four",
+        "offset":-0.9
+      }
+    },
+    {
+      "webglfx": {
+        "start":42.0,
+        "end":69.0,
+        "target":"_new",
+        "effect":"rumbleText",
+        "text":"YOU",
+        "link":"http://en.wikipedia.org/wiki/Nineteen_Eighty-Four",
+        "offset":-2.0
+      }
+    },
+    {
+      "webglfx": {
+        "start":65.0,
+        "end":80.0,
+        "target":"_new",
+        "effect":"flyUpText",
+        "text":"Hacked!",
+        "offset":0.7
+      }
+    },
+    {
+      "webglfx": {
+        "start":70.0,
+        "end":75.0,
+        "target":"_new",
+        "effect":"showSource"
+      }
+    },
+    {
+      "webglfx": {
+        "start":100.0,
+        "end":102.0,
+        "target":"videoPlane",
+        "effect":"moveBack"
+      }
+    },
+    {
+      "webglfx": {
+        "start":121.0,
+        "end":121.5,
+        "target":"videoPlane",
+        "effect":"zoomOut"
+      }
+    }
+  ]
+}

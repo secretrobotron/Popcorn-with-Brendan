@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+	<head>
+		<title>GLVideo Popcorn Test</title>
+    <base target="_blank" />
+    <style type="text/css">
+      body { background-color: #000; margin: 0; overflow: hidden; font: 20pt 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Verdana, Arial, sans-serif; text-shadow: #000 2px 2px 2px; }
+      #viewport-frame { position: relative; }
+      #test-title { font-size: 36pt; top: 10px; left: 10px; }
+      #perspective-change-notification { text-align: right; width: 100%; padding-bottom: 10px; padding-right: 10px; }
+      .overlay-text { display: inline; color: #fff; position: absolute; }
+      .video { display: none; }
+      .subtitle { font-size: 150%; position: relative; top: .5em; }
+      .interface-button { position: absolute; text-decoration: none; color: #fff; font-size: 32pt; z-index: 30; white-space: nowrap; }
+      .interface-button:hover { cursor: pointer; }
+      #about-about { opacity: 0.1; }
+      #show-link { position: absolute; text-decoration: none; color: #fff; font-size: 32pt; z-index: 30; white-space: nowrap; }
+      #show-link a{ color: #fff; text-decoration: none;}
+      #show-link a:hover { text-decoration: underline; }
+      #source-view-container { position: absolute; top: 0px; left: 0px; visibility: hidden; }
+      #source-view { border: 0; background: none; color: #44ee22; font-family: 'System', 'Terminal', 'Courier New'; }
+      #hack-me-now { position: absolute; visibility: hidden; }
+    </style>
+    <script src="lib/jquery.js" type="text/javascript"></script>
+    <script src="lib/CubicVR.js" type="text/javascript"></script>
+    <script src="lib/popcorn.js" type="text/javascript"></script>
+    <script src="lib/popcorn.webglfx.js" type="text/javascript"></script>
+    <script src="lib/popcorn.parserJSON.js" type="text/javascript"></script>
+    <script type='text/javascript'>	
+      var canvas, videosReady = 0;
+
+      window.addEventListener('keydown', function(e) { console.log(document.getElementById('video1').currentTime); if (e.keyCode === 32) e.preventDefault(); }, false);
+
+      window.addEventListener('DOMContentLoaded', function() {
+        var linkInterval = 0;
+        var about = document.getElementById('about-button');
+        about.style.top = window.innerHeight/2 - about.offsetHeight/2 + "px";
+        about.style.left = window.innerWidth - about.offsetWidth + "px";
+        about.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (WebGLFX.about(animateAbout)) {
+            var txt = $('#about-about').html();
+            if (txt === 'About') {
+              $('#about-about').html('Back');
+            }
+            else {
+              $('#about-about').html('About');
+            } //if
+          } //if
+        }, false);
+        about.addEventListener('mouseover', function(e) {
+          $('#about-about').fadeTo(200, 1);
+        }, false);
+        about.addEventListener('mouseout', function(e) {
+          $('#about-about').fadeTo(200, 0.1);
+        }, false);
+
+        var link = document.getElementById('show-link');
+        link.style.top = window.innerHeight - link.offsetHeight - 5 + "px";
+        link.style.left = "5px";
+
+        canvas = document.getElementById('viewport');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var gl = CubicVR.GLCore.init(canvas, "lib/CubicVR_Core.vs", "lib/CubicVR_Core.fs");
+
+        if (!gl) {
+          alert('Error: No WebGL support.');
+          return;
+        } //if
+
+        var scene = new CubicVR.Scene(canvas.width, canvas.height, 45);
+        scene.setSkyBox(new CubicVR.SkyBox({texture:'images/space_skybox.jpg'}));
+
+        var videoTextures = [];
+        var videos = [];
+        var popcorns = [];
+        var videoNames = ['video1', 'video2'];
+        var videoPlane = new CubicVR.SceneObject(new CubicVR.Mesh());
+        videoPlane.name = 'videoPlane';
+        scene.bindSceneObject(videoPlane, true);
+
+        function videosAreReady() {
+          if (videosReady === popcorns.length) {
+            for (var j=0; j<popcorns.length; ++j) {
+              if (j>0) {
+                popcorns[j].volume(0);
+              } //if
+              popcorns[j].play();
+            } //for j
+          } //if
+        } //videosAreReady
+
+        for (var i=0; i<videoNames.length; ++i) {
+          var video = document.getElementById(videoNames[i]);
+          var videoTexture = new CubicVR.CanvasTexture(video);
+
+          var planeMaterial = new CubicVR.Material({
+            color: [0, 0, 1],
+            textures: {
+              color: videoTexture
+            }
+          });
+          var planeMesh = CubicVR.primitives.plane({
+            size: 3.0,
+            material: planeMaterial,
+            uvmapper: {
+              projectionMode: CubicVR.enums.uv.projection.PLANAR,
+              projectionAxis: CubicVR.enums.uv.axis.Z,
+              scale: [3, 3, 1]
+            }
+          });
+          planeMesh.triangulateQuads().compile().clean();
+
+          var sceneObjectChild = new CubicVR.SceneObject(planeMesh);
+          sceneObjectChild.name = videoNames[i];
+          videoPlane.bindChild(sceneObjectChild);
+
+          video.addEventListener('error', function(e) {
+            alert('Video error!');
+          }, false);
+
+          var video = document.getElementById(videoNames[i]);
+          var popcorn = new Popcorn('#'+videoNames[i]);
+
+          video.addEventListener('canplaythrough', function(e) {
+            videosAreReady();
+          }, false);
+            
+          videoTextures.push(videoTexture);
+          videos.push(video);
+          popcorns.push(popcorn);
+        } //for
+
+        videosAreReady();
+
+        scene.camera.position = [0,0,3];
+        scene.camera.target = [0,0,-1];
+
+        videoPlane.children[0].position[2]=-0.002;
+        videoPlane.children[1].position[2]=0.002;
+
+        videoPlane.scale = [1,.7,1];
+        videoPlane.visible = false;
+
+        var popcorn = popcorns[0];
+        var frames = 0;
+        
+        var notification = $('#perspective-change-notification');
+        notification.hide();
+        var t = window.innerHeight - 10 - notification.height();
+        var l = window.innerWidth - 10 - notification.width();
+        notification.offset({top: t, left: l});
+
+        $('#test-title').delay(2000).fadeOut(2000);
+
+        var animateAbout;
+        (function() {
+          var text = ['WebGL Popcorn Test ', 'By @secretrobotron', '', 'Using:', '  -Popcorn.js', '  -CubicVR.js', '  -<canvas>', '  -<video>'];
+          planeMaterial = new CubicVR.Material({textures: {color: new CubicVR.TextTexture(text, {font:'32pt Arial', lineHeight: 45})}});
+          var planeMaterial2 = new CubicVR.Material({textures: {color: new CubicVR.TextTexture(text, {color: '#444', font:'32pt Arial', lineHeight: 45})}});
+          planeMesh = CubicVR.primitives.plane({size: 3.0, material: planeMaterial, uvmapper: { projectionMode: CubicVR.enums.uv.projection.PLANAR, projectionAxis: CubicVR.enums.uv.axis.Z, scale: [3, 3, 1]}});
+          planeMesh.triangulateQuads().compile().clean();
+
+          var aboutPlane = new CubicVR.SceneObject(planeMesh);
+          scene.bindSceneObject(aboutPlane);
+
+          planeMesh = CubicVR.primitives.plane({size: 3.3, material: planeMaterial2, uvmapper: { projectionMode: CubicVR.enums.uv.projection.PLANAR, projectionAxis: CubicVR.enums.uv.axis.Z, scale: [3.3, 3.3, 1]}});
+          planeMesh.triangulateQuads().compile().clean();
+          var aboutPlaneBg = new CubicVR.SceneObject(planeMesh);
+          aboutPlaneBg.position[2] = 1;
+          aboutPlane.bindChild(aboutPlaneBg);
+
+          var z, y;
+          z = aboutPlane.position[2] = 7;
+          y = aboutPlane.position[1] = -0.5;
+          var mvc = new CubicVR.MouseViewController(canvas, scene.camera);
+          var target_y;
+          var target_z;
+
+          function animate() {
+            aboutPlane.rotation[1] = Math.sin(frames/60)*2;
+            aboutPlane.rotation[2] = Math.cos(frames/80)*2;
+            aboutPlane.rotation[0] = Math.sin(frames/120)*2;
+            target_y = y + (mvc.getMousePosition()[1]/window.innerHeight);
+            target_z = z + (mvc.getMousePosition()[0]/window.innerWidth);
+            aboutPlane.position[1] -= (aboutPlane.position[1] - target_y) * 0.1;
+            aboutPlane.position[2] -= (aboutPlane.position[2] - target_z) * 0.1;
+          } //animateAbout
+          animateAbout = animate;
+
+          WebGLFX.init(canvas, scene, popcorns);
+
+          WebGLFX.showLink = function(link) {
+            var show = $('#show-link');
+            if (show.html() !== link) {
+              clearInterval(linkInterval);
+              show.html(link);
+              show.fadeTo(200, 1);
+              linkInterval = setInterval(function() {
+                show.fadeTo(200, 0);
+                clearInterval(linkInterval);
+              }, 5000);
+            } //if
+          }; //showLink
+          $('#show-link').hide();
+        })();
+
+
+        var hideSource = function() {
+          var svc =$('#source-view-container');
+          var hmn = document.getElementById('hack-me-now');
+          svc.slideUp(700, function() {
+            svc[0].style.visibility = 'hidden';
+            $('#hack-me-now').hide();
+          });
+          hmn.removeEventListener('click', function(e) {
+            hideSource();
+          }, false);
+        }; //hideSource
+        var showSource = function() {
+          var svc = document.getElementById('source-view-container');
+          var hmn = document.getElementById('hack-me-now');
+          $(svc).hide();
+          svc.style.visibility = 'visible';
+          $(svc).slideDown(700);
+          hmn.style.visibility = 'visible';
+          hmn.addEventListener('click', hideSource, false);
+        }; //showSource
+        WebGLFX.showSource = showSource;
+        WebGLFX.hideSource = hideSource;
+
+        var svc = document.getElementById('source-view-container');
+        var sv = document.getElementById('source-view');
+        var hmn = document.getElementById('hack-me-now');
+        var svw = window.innerWidth/1.5;
+        var svh = window.innerHeight/1.5;
+        sv.value = document.body.innerHTML;
+        sv.style.width = svw + 'px';
+        sv.style.height = svh + 'px';
+        svc.style.width = svw + 'px';
+        svc.style.height = svh + 'px';
+        sv.style.top = window.innerHeight/2 - svh/2 + "px";
+        sv.style.left = window.innerWidth/2 - svw/2 + "px";
+        svc.style.top = window.innerHeight/2 - svh/2 + "px";
+        svc.style.left = window.innerWidth/2 - svw/2 + "px";
+        hmn.style.height = "50px";
+        hmn.style.width = "100px";
+        hmn.style.top = window.innerHeight/2 - hmn.offsetHeight/2 + "px";
+        hmn.style.left = window.innerWidth/2 + svw/2 - hmn.offsetWidth - 50 + "px";
+
+        CubicVR.MainLoop(function(timer, gl) {
+          WebGLFX.update(popcorn.currentTime(), frames);
+          for (var i=0; i<videoTextures.length; ++i) {
+            if (videos[i].currentTime > 0) videoTextures[i].update();
+          } //for
+          scene.render();
+          ++frames;
+          animateAbout();
+        });
+
+        popcorns[0].listen('ended', function() { $('#about-button').fadeOut(200); });
+      }, false);
+    </script>
+  </head>
+  <body>
+    <a id="about-button" class="interface-button">
+      <span id="about-about">About</span>&gt;</a>
+    <div id="show-link">Q</div>
+    <video controls class="video" width="200" height="100" id="video1" data-timeline-sources="data/data.json">
+      <source src="videos/brendan1.small.ogv" />
+    </video>
+    <video controls class="video" width="200" height="100" id="video2">
+      <source src="videos/brendan2.small.ogv" />
+    </video>
+    <script type="text/javascript">
+      document.getElementById('video1').addEventListener('canplaythrough', function(e) {
+        ++videosReady;
+      }, false);
+      document.getElementById('video2').addEventListener('canplaythrough', function(e) {
+        ++videosReady;
+      }, false);
+    </script>
+    <div id="viewport-frame">
+      <canvas id="viewport"></canvas>
+      <div id="test-title" class="overlay-text">
+        Popcorn / WebGL: 
+        <span class="subtitle">
+          Perspective Test
+        </span>
+      </div>
+      <div id="perspective-change-notification" class="overlay-text">
+        Press [Space] to Change Perspective
+      </div>
+    </div>
+
+    <div id="source-view-container">
+      <textarea id="source-view">
+      </textarea>
+    </div>
+    <input type="button" id="hack-me-now" value="hack." />
+  </body>
+</html>
