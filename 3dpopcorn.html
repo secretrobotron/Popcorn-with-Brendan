@@ -296,6 +296,10 @@
       vid2.addEventListener('canplaythrough', function(e) {
         ++videosReady;
       }, false);
+      vid1.addEventListener('progress', function(e) {
+        var p = Math.round(vid1.buffered.end(0)/vid1.duration * 100);
+        $('#loading-message').html('Loading Video Content: ' + p + '%');
+      }, false);
       vid1.play();
       vid2.play();
       vid1.pause();
