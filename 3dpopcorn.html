@@ -256,7 +256,9 @@
         hmn.style.left = window.innerWidth/2 + svw/2 - hmn.offsetWidth - 50 + "px";
 
         CubicVR.MainLoop(function(timer, gl) {
-          console.log(videos[0].buffered.start(0), videos[0].buffered.end(0), videos[0].buffered.length);
+          if (videos[0].buffered.length > 0) {
+            console.log(videos[0].buffered.start(0), videos[0].buffered.end(0));
+          } //if
           WebGLFX.update(popcorn.currentTime(), frames);
           for (var i=0; i<videoTextures.length; ++i) {
             if (videos[i].currentTime > 0) videoTextures[i].update();
