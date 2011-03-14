@@ -29,6 +29,7 @@
     <script src="lib/popcorn.parserJSON.js" type="text/javascript"></script>
     <script type='text/javascript'>	
       var canvas, videosReady = 0;
+      var videoError;
 
       //window.addEventListener('keydown', function(e) { console.log(document.getElementById('video1').currentTime); if (e.keyCode === 32) e.preventDefault(); }, false);
 
@@ -256,9 +257,6 @@
         hmn.style.left = window.innerWidth/2 + svw/2 - hmn.offsetWidth - 50 + "px";
 
         CubicVR.MainLoop(function(timer, gl) {
-          if (videos[0].buffered.length > 0) {
-            console.log(videos[0].buffered.start(0), videos[0].buffered.end(0));
-          } //if
           WebGLFX.update(popcorn.currentTime(), frames);
           for (var i=0; i<videoTextures.length; ++i) {
             if (videos[i].currentTime > 0) videoTextures[i].update();
@@ -284,6 +282,12 @@
       <source src="videos/brendan2.small.ogv" />
     </video>
     <script type="text/javascript">
+      document.getElementById('video1').addEventListener('error', function(e) {
+        videoError = e;
+      }, false);
+      document.getElementById('video2').addEventListener('error', function(e) {
+        videoError = e;
+      }, false);
       document.getElementById('video1').addEventListener('canplaythrough', function(e) {
         ++videosReady;
       }, false);
