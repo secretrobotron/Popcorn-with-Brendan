@@ -282,18 +282,24 @@
       <source src="videos/brendan2.small.ogv" />
     </video>
     <script type="text/javascript">
-      document.getElementById('video1').addEventListener('error', function(e) {
+      var vid1 = document.getElementById('video1');
+      var vid2 = document.getElementById('video2');
+      vid1.addEventListener('error', function(e) {
         videoError = e;
       }, false);
-      document.getElementById('video2').addEventListener('error', function(e) {
+      vid2.addEventListener('error', function(e) {
         videoError = e;
       }, false);
-      document.getElementById('video1').addEventListener('canplaythrough', function(e) {
+      vid1.addEventListener('canplaythrough', function(e) {
         ++videosReady;
       }, false);
-      document.getElementById('video2').addEventListener('canplaythrough', function(e) {
+      vid2.addEventListener('canplaythrough', function(e) {
         ++videosReady;
       }, false);
+      vid1.play();
+      vid2.play();
+      vid1.pause();
+      vid2.pause();
     </script>
     <div id="viewport-frame">
       <canvas id="viewport"></canvas>
