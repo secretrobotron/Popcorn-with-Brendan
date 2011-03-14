@@ -30,7 +30,7 @@
     <script type='text/javascript'>	
       var canvas, videosReady = 0;
 
-      window.addEventListener('keydown', function(e) { console.log(document.getElementById('video1').currentTime); if (e.keyCode === 32) e.preventDefault(); }, false);
+      //window.addEventListener('keydown', function(e) { console.log(document.getElementById('video1').currentTime); if (e.keyCode === 32) e.preventDefault(); }, false);
 
       window.addEventListener('DOMContentLoaded', function() {
         var linkInterval = 0;
@@ -256,6 +256,7 @@
         hmn.style.left = window.innerWidth/2 + svw/2 - hmn.offsetWidth - 50 + "px";
 
         CubicVR.MainLoop(function(timer, gl) {
+          console.log(videos[0].buffered.start(0), videos[0].buffered.end(0), videos[0].buffered.length);
           WebGLFX.update(popcorn.currentTime(), frames);
           for (var i=0; i<videoTextures.length; ++i) {
             if (videos[i].currentTime > 0) videoTextures[i].update();
